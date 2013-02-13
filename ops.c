@@ -18,8 +18,8 @@ static inline word check(unsigned int arg) {
 }
 
 static inline word test(word op) {
-    word cases[4] = {!(cond&0x1), cond&0x1, !(cond&0x2), 1};
-    return cases[(op&0x30)>>4];
+    word cases[4] = {!(cond&0x1), cond&0x1, cond&0x2, 1};
+    return cases[op];
 } 
 
 
@@ -55,13 +55,13 @@ void mov(word op) {
 }
 
 void cld(word op) {
-    word state = test(op);
+    word state = test((op&0x30) >> 4);
     word addr = reg[ro(op)];
     reg[ro(op)]++;
     if (state) reg[rd(op)] = check(mem[addr]);
 }
 
 void cda(word op) {
-    reg[ro(op)] = alu_m[op&0x3](reg[ro(op)], test(op) ? 0xff : 0x00);
+    reg[ro(op)] = alu_m[(op&0x30) >> 4](reg[ro(op)], test(op&0x3) ? 0xff : 0x00);
 }
 

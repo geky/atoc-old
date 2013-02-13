@@ -1,4 +1,5 @@
 #include "atoc.h"
+#include "obj.h"
 
 #include <stdio.h>
 #include <unistd.h>
@@ -32,16 +33,17 @@ int main(int argc, char **argv) {
     for (i=1; i<argc; i++) {
         if (!strcmp(argv[i], "-f")) {
             timeval = (int)(1000.0 / strtod(argv[++i], 0));
-        }
+        } else if (!strcmp(argv[i]+strlen(argv[i])-3, ".ao")) {
+            load_file(argv[i]);
+        }        
     }
-
 
     init_display();
 
     signal(SIGINT, handle_kill);
 
-    srand(time(0));
-    for (i=0; i<0x100; i++) mem[i] = rand() % 0x100;
+//    srand(time(0));
+//    for (i=0; i<0x100; i++) mem[i] = rand() % 0x100;
 
     run(simple_display);
     exit(0);

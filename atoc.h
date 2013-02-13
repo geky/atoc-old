@@ -14,6 +14,6 @@ extern word cond;
 extern word mem[256];
 
 
-void run(void (*)());
+void run(void (*disp)());
 
 #endif
