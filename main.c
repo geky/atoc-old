@@ -2,8 +2,12 @@
 
 #include <stdio.h>
 #include <unistd.h>
+#include <string.h>
+#include <errno.h>
 #include <time.h>
 #include <signal.h>
+
+int timeval = 1000;
 
 
 void handle_kill(int err) {
@@ -15,13 +19,22 @@ void init_display(void) {
     printf("\033[?25l");
 }
 
-void display(void) {
+void simple_display(void) {
     printf("\rc[%2x] ir[%2x] r[%2x %2x %2x %2x]", cond, ir, reg[0], reg[1], reg[2], reg[3]);
-    usleep(1000);
+    fflush(stdout);
+    usleep(timeval);
 }
 
-int main() {
+int main(int argc, char **argv) {
     int i;
+    errno = 0;
+
+    for (i=1; i<argc; i++) {
+        if (!strcmp(argv[i], "-f")) {
+            timeval = (int)(1000.0 / strtod(argv[++i], 0));
+        }
+    }
+
 
     init_display();
 
@@ -30,6 +43,6 @@ int main() {
     srand(time(0));
     for (i=0; i<0x100; i++) mem[i] = rand() % 0x100;
 
-    run(display);
+    run(simple_display);
     exit(0);
 }
