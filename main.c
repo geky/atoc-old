@@ -5,7 +5,6 @@
 #include <unistd.h>
 #include <string.h>
 #include <errno.h>
-#include <time.h>
 #include <signal.h>
 
 int timeval = 1000;
@@ -32,7 +31,12 @@ int main(int argc, char **argv) {
 
     for (i=1; i<argc; i++) {
         if (!strcmp(argv[i], "-f")) {
-            timeval = (int)(1000.0 / strtod(argv[++i], 0));
+            i++;
+
+            if (strcmp(argv[i],"0"))
+                timeval = (int)(1000.0 / strtod(argv[i], 0));
+            else
+                timeval = 0;
         } else if (!strcmp(argv[i]+strlen(argv[i])-3, ".ao")) {
             load_file(argv[i]);
         }        
@@ -41,9 +45,6 @@ int main(int argc, char **argv) {
     init_display();
 
     signal(SIGINT, handle_kill);
-
-//    srand(time(0));
-//    for (i=0; i<0x100; i++) mem[i] = rand() % 0x100;
 
     run(simple_display);
     exit(0);
