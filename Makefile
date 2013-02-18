@@ -5,8 +5,8 @@ all : atoc
 run : ${PROG}
 	./${PROG}
 
-atoc : main.c atoc.c ops.c
-	gcc ${CFLAGS} main.c atoc.c ops.c obj.c
+atoc : main.c atoc.c ops.c obj.c display.c
+	gcc ${CFLAGS} main.c atoc.c ops.c obj.c display.c
 
 clean :
 	rm atoc

@@ -58,7 +58,7 @@ void cld(word op) {
     word state = test((op&0x30) >> 4);
     word addr = reg[ro(op)];
     reg[ro(op)]++;
-    if (state) reg[rd(op)] = check(mem[addr]);
+    if (state) reg[rd(op)] = mem[addr];
 }
 
 void cda(word op) {

@@ -1,5 +1,6 @@
 #include "atoc.h"
 #include "obj.h"
+#include "display.h"
 
 #include <stdio.h>
 #include <unistd.h>
@@ -7,26 +8,15 @@
 #include <errno.h>
 #include <signal.h>
 
-int timeval = 1000;
-
 
 void handle_kill(int err) {
-    printf("\033[?25h\n");
+    deinit_display();
     exit(0);
-}
-
-void init_display(void) {
-    printf("\033[?25l");
-}
-
-void simple_display(void) {
-    printf("\rc[%2x] ir[%2x] r[%2x %2x %2x %2x]", cond, ir, reg[0], reg[1], reg[2], reg[3]);
-    fflush(stdout);
-    usleep(timeval);
-}
+}    
 
 int main(int argc, char **argv) {
-    int i;
+    int i, type = 0, delay = 1000;
+    void (*display)(void);
     errno = 0;
 
     for (i=1; i<argc; i++) {
@@ -34,18 +24,20 @@ int main(int argc, char **argv) {
             i++;
 
             if (strcmp(argv[i],"0"))
-                timeval = (int)(1000.0 / strtod(argv[i], 0));
+                delay = (int)(1000.0 / strtod(argv[i], 0));
             else
-                timeval = 0;
+                delay = 0;
+        } else if (!strcmp(argv[i], "-c")) {
+            type = 1;
         } else if (!strcmp(argv[i]+strlen(argv[i])-3, ".ao")) {
             load_file(argv[i]);
         }        
     }
 
-    init_display();
-
     signal(SIGINT, handle_kill);
 
-    run(simple_display);
+    display = init_display(type, delay);
+    run(display);
+
     exit(0);
 }
